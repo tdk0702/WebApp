@@ -54,3 +54,11 @@ exports.changeNameOfCategory=async(req,res)=>{
   if(!change) res.status(404).json("Error in Change Category")
   else res.status(201).json("Change Successfully")
 }
+
+exports.getBudgetCategoryAndIteam=async(req,res)=>{
+  const userId=req.user?.userId
+  const month=req.params.month
+  const budgetCategoryAndIteam=await BudCategoryService.getBudgetCategoryAndIteam({userId,month})
+  if(!budgetCategoryAndIteam) res.status(404).json("Error in get Budget Category And Iteam")
+  else res.status(201).json(budgetCategoryAndIteam)
+}

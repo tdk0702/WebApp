@@ -45,3 +45,15 @@ exports.changeCategoryName=async({budgetId,categoryId,newName})=>{
   category.name=newName;
   return await category.save();
 }
+
+//API transaction
+exports.getBudgetCategoryAndIteam=async({userId,month})=>{
+  try {
+    const budget=await Budget.findOne({userId,month});
+    const budgetCategory=await BudgetCategory.find({userId,budgetId:budget._id});
+    const budgetItem=await BudgetItem.find({userId,budgetId:budget._id});
+    return {budgetCategory,budgetItem}
+  } catch (error) {
+    throw error
+  }
+}
