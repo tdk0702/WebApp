@@ -5,28 +5,30 @@ on:
     branches: [ "main" ]
 
 jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
+      
+        - name: Log in to Docker Hub
+          uses: docker/login-action@v3.4.0
+          with:
+            username: ${{ vars.DOCKERHUB_USERNAME }}
+            password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-      
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v3.4.0
-      with:
-        username: ${{ vars.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+      - name: Build and push Docker image
+        run: |
+          docker build -t yourdockerhub/auth-service:latest ./services/auth
+          docker push yourdockerhub/auth-service:latest
 
-    - name: Build and push Docker image
-      run: |
-        docker build -t yourdockerhub/auth-service:latest ./services/auth
-        docker push yourdockerhub/auth-service:latest
+      - name: Setup kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
 
-    - name: Setup kubeconfig
-      run: |
-        mkdir -p ~/.kube
-        echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
-
-    - name: Deploy to K3s
-      run: kubectl apply -f k8s/
+      - name: Deploy to K3s
+        run: kubectl apply -f k8s/
