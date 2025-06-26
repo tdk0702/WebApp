@@ -19,9 +19,9 @@ jobs:
         with:
             username: ${{ vars.DOCKERHUB_USERNAME }}
             password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+            
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Build and push Docker image
         run: |
